@@ -1,5 +1,6 @@
 local ts = vim.treesitter
 local parsers = require("nvim-treesitter.parsers")
+local config = require("nvim-remove-comments.config")
 
 local M = {}
 
@@ -17,7 +18,9 @@ function M.remove_comments()
 	end
 
 	local root = parser:parse()[1]:root()
-	local query = ts.query.parse(ft, [[ (comment) @comment ]])
+	local query_str = config.queries[ft]
+	local query = ts.query.parse(ft, query_str or [[ (comment) @comment ]])
+	-- local query = ts.query.parse(ft, [[ (comment) @comment ]])
 
 	local lines_to_delete = {}
 	local edits = {}
