@@ -4,6 +4,8 @@ A simple Neovim plugin to **remove all comments** from the current buffer using 
 
 > Great for stripping LLM-generated comments or cleaning up code.
 
+![Showcase](example.gif)
+
 ---
 
 ## ✨ Features
@@ -32,3 +34,4 @@ Sometimes you want to clean up your file by removing all comments — especially
     require("nvim-remove-comments").setup()
   end,
 }
+```
