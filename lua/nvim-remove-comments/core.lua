@@ -10,8 +10,8 @@ function M.remove_comments()
 	if not parsers.has_parser(ft) then
 		return
 	end
-	local parser = parsers.get_parser(bufnr, ft)
 
+	local parser = parsers.get_parser(bufnr, ft)
 	if not parser then
 		return
 	end
@@ -19,16 +19,43 @@ function M.remove_comments()
 	local root = parser:parse()[1]:root()
 	local query = ts.query.parse(ft, [[ (comment) @comment ]])
 
-	local regions = {}
+	local lines_to_delete = {}
+	local edits = {}
 
-	for id, node in query:iter_captures(root, bufnr, 0, -1) do
+	for _, node in query:iter_captures(root, bufnr, 0, -1) do
 		local srow, scol, erow, ecol = node:range()
-		table.insert(regions, 1, { srow, scol, erow, ecol })
+		local lines = vim.api.nvim_buf_get_lines(bufnr, srow, erow + 1, false)
+
+		if srow == erow then
+			local line = lines[1]
+
+			if scol == 0 and ecol == #line then
+				lines_to_delete[srow] = true
+			else
+				local before = line:sub(1, scol)
+				local after = line:sub(ecol + 1)
+				vim.api.nvim_buf_set_lines(bufnr, srow, srow + 1, false, { before .. after })
+			end
+		else
+			for i = srow, erow do
+				lines_to_delete[i] = true
+			end
+		end
 	end
 
-	for _, r in ipairs(regions) do
-		vim.api.nvim_buf_set_text(bufnr, r[1], r[2], r[3], r[4], {})
+	local rows = {}
+	for row in pairs(lines_to_delete) do
+		table.insert(rows, row)
 	end
+	table.sort(rows, function(a, b)
+		return a > b
+	end)
+
+	for _, row in ipairs(rows) do
+		vim.api.nvim_buf_set_lines(bufnr, row, row + 1, false, {})
+	end
+
+	vim.lsp.buf.format({ async = true })
 end
 
 return M
