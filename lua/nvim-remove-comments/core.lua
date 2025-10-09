@@ -1,5 +1,4 @@
 local ts = vim.treesitter
-local parsers = require("nvim-treesitter.parsers")
 local config = require("nvim-remove-comments.config")
 
 local M = {}
@@ -8,22 +7,29 @@ function M.remove_comments()
 	local bufnr = vim.api.nvim_get_current_buf()
 	local ft = vim.bo[bufnr].filetype
 
-	if not parsers.has_parser(ft) then
+	local has_parser = pcall(vim.treesitter.language.add, ft)
+	if not has_parser then
+		vim.notify("No treesitter parser found for " .. ft, vim.log.levels.WARN)
 		return
 	end
 
-	local parser = parsers.get_parser(bufnr, ft)
+	local parser = vim.treesitter.get_parser(bufnr, ft)
 	if not parser then
+		vim.notify("Failed to get parser for " .. ft, vim.log.levels.ERROR)
 		return
 	end
 
-	local root = parser:parse()[1]:root()
+	local trees = parser:parse()
+	if not trees or #trees == 0 then
+		return
+	end
+
+	local root = trees[1]:root()
 	local query_str = config.queries[ft]
 	local query = ts.query.parse(ft, query_str or [[ (comment) @comment ]])
 	-- local query = ts.query.parse(ft, [[ (comment) @comment ]])
 
 	local lines_to_delete = {}
-	local edits = {}
 
 	for _, node in query:iter_captures(root, bufnr, 0, -1) do
 		local srow, scol, erow, ecol = node:range()
