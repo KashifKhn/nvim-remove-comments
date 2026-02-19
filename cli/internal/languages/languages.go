@@ -78,32 +78,32 @@ var byExtension = map[string]LangConfig{
 	},
 	".c": {
 		Name:     "c",
-		Query:    "(line_comment) @comment (block_comment) @comment",
+		Query:    "(comment) @comment",
 		Language: c.GetLanguage,
 	},
 	".h": {
 		Name:     "c",
-		Query:    "(line_comment) @comment (block_comment) @comment",
+		Query:    "(comment) @comment",
 		Language: c.GetLanguage,
 	},
 	".cpp": {
 		Name:     "cpp",
-		Query:    "(line_comment) @comment (block_comment) @comment",
+		Query:    "(comment) @comment",
 		Language: cpp.GetLanguage,
 	},
 	".cc": {
 		Name:     "cpp",
-		Query:    "(line_comment) @comment (block_comment) @comment",
+		Query:    "(comment) @comment",
 		Language: cpp.GetLanguage,
 	},
 	".cxx": {
 		Name:     "cpp",
-		Query:    "(line_comment) @comment (block_comment) @comment",
+		Query:    "(comment) @comment",
 		Language: cpp.GetLanguage,
 	},
 	".hpp": {
 		Name:     "cpp",
-		Query:    "(line_comment) @comment (block_comment) @comment",
+		Query:    "(comment) @comment",
 		Language: cpp.GetLanguage,
 	},
 	".rs": {
