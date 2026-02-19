@@ -49,16 +49,33 @@ jobs:
           args: --timeout=5m
 
   build:
-    name: Build
-    runs-on: ubuntu-latest
+    name: Build (${{ matrix.goos }}, ${{ matrix.goarch }})
     needs: [test, lint]
+    runs-on: ${{ matrix.runner }}
     strategy:
+      fail-fast: false
       matrix:
-        goos: [linux, darwin, windows]
-        goarch: [amd64, arm64]
-        exclude:
-          - goos: windows
+        include:
+          - goos: linux
+            goarch: amd64
+            runner: ubuntu-latest
+            cc: gcc
+          - goos: linux
             goarch: arm64
+            runner: ubuntu-latest
+            cc: aarch64-linux-gnu-gcc
+          - goos: darwin
+            goarch: amd64
+            runner: macos-latest
+            cc: clang
+          - goos: darwin
+            goarch: arm64
+            runner: macos-latest
+            cc: clang
+          - goos: windows
+            goarch: amd64
+            runner: windows-latest
+            cc: gcc
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -69,16 +86,21 @@ jobs:
           go-version: '1.24.x'
           cache: true
 
+      - name: Install arm64 cross-compiler (linux/arm64 only)
+        if: matrix.goos == 'linux' && matrix.goarch == 'arm64'
+        run: sudo apt-get update -q && sudo apt-get install -y gcc-aarch64-linux-gnu
+
       - name: Build binary
         working-directory: ./cli
         env:
           GOOS: ${{ matrix.goos }}
           GOARCH: ${{ matrix.goarch }}
+          CGO_ENABLED: '1'
+          CC: ${{ matrix.cc }}
+        shell: bash
         run: |
           EXT=""
-          if [ "$GOOS" = "windows" ]; then
-            EXT=".exe"
-          fi
+          if [ "$GOOS" = "windows" ]; then EXT=".exe"; fi
           go build -ldflags="-s -w -X main.version=dev" -o remove-comments-${{ matrix.goos }}-${{ matrix.goarch }}${EXT} .
 
       - name: Upload artifact
