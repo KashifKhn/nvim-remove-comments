@@ -128,6 +128,7 @@ remove-comments --jobs 4 .
 | Flag | Short | Default | Description |
 |------|-------|---------|-------------|
 | `--write` | `-w` | `false` | Write changes to disk (default is dry-run) |
+| `--diff` | `-d` | `false` | Print unified diff for each changed file |
 | `--quiet` | `-q` | `false` | Print only the final summary line |
 | `--lang` | | `""` | Process only files of this language (e.g. `go`, `python`) |
 | `--jobs` | `-j` | NumCPU | Number of parallel workers |
