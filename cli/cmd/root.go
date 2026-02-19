@@ -111,9 +111,22 @@ func run(cmd *cobra.Command, args []string) error {
 				result := diff.Compute(entry.Path, src, after)
 
 				if result.Changed {
-					atomic.AddInt32(&changed, 1)
 					if flagWrite {
-						if writeErr := os.WriteFile(entry.Path, result.After, 0o644); writeErr != nil {
+						info, statErr := os.Stat(entry.Path)
+						if statErr != nil {
+							atomic.AddInt32(&errors, 1)
+							mu.Lock()
+							printer.Error(entry.Path, statErr)
+							mu.Unlock()
+							continue
+						}
+						if info.Mode()&0o200 == 0 {
+							mu.Lock()
+							printer.File(result)
+							mu.Unlock()
+							continue
+						}
+						if writeErr := os.WriteFile(entry.Path, result.After, info.Mode()); writeErr != nil {
 							atomic.AddInt32(&errors, 1)
 							mu.Lock()
 							printer.Error(entry.Path, writeErr)
@@ -121,6 +134,7 @@ func run(cmd *cobra.Command, args []string) error {
 							continue
 						}
 					}
+					atomic.AddInt32(&changed, 1)
 				}
 
 				mu.Lock()
