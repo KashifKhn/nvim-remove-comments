@@ -120,6 +120,12 @@ rmc --write ./src
 # Process only Go files
 rmc --lang go .
 
+# Exclude generated files
+rmc --exclude "*.g.dart" .
+
+# Exclude multiple patterns (repeat the flag)
+rmc --exclude "*.g.dart" --exclude "*_test.go" .
+
 # Suppress per-file output, show only the summary
 rmc --quiet .
 
@@ -137,6 +143,7 @@ rmc --jobs 4 .
 | `--write` | `-w` | `false` | Write changes to disk (default is dry-run) |
 | `--diff` | `-d` | `false` | Print unified diff for each changed file |
 | `--quiet` | `-q` | `false` | Print only the final summary line |
+| `--exclude` | `-e` | | Glob pattern to exclude files (repeatable, e.g. `*.g.dart`) |
 | `--lang` | | `""` | Process only files of this language (e.g. `go`, `python`) |
 | `--jobs` | `-j` | NumCPU | Number of parallel workers |
 | `--max-file-size` | | `10485760` | Skip files larger than this size in bytes (10 MB) |

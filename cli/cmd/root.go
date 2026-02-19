@@ -30,6 +30,7 @@ var (
 	flagLang        string
 	flagJobs        int
 	flagMaxFileSize int64
+	flagExclude     []string
 )
 
 func Execute(version string) {
@@ -46,6 +47,7 @@ func init() {
 	rootCmd.Flags().StringVar(&flagLang, "lang", "", "Only process files of this language (e.g. go, python)")
 	rootCmd.Flags().IntVarP(&flagJobs, "jobs", "j", 0, "Number of parallel workers (default: NumCPU)")
 	rootCmd.Flags().Int64Var(&flagMaxFileSize, "max-file-size", 10*1024*1024, "Skip files larger than this size in bytes")
+	rootCmd.Flags().StringArrayVarP(&flagExclude, "exclude", "e", nil, "Glob patterns to exclude (e.g. '*.g.dart', 'vendor/**')")
 }
 
 func run(cmd *cobra.Command, args []string) error {
@@ -63,7 +65,7 @@ func run(cmd *cobra.Command, args []string) error {
 		jobs = runtime.NumCPU()
 	}
 
-	entries, walkErrs := walker.Walk(root, flagLang, flagMaxFileSize)
+	entries, walkErrs := walker.Walk(root, flagLang, flagMaxFileSize, flagExclude)
 	if len(walkErrs) > 0 {
 		for _, e := range walkErrs {
 			fmt.Fprintf(os.Stderr, "walk error: %v\n", e)
