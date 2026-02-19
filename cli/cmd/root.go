@@ -31,6 +31,13 @@ var (
 	flagMaxFileSize int64
 )
 
+func Execute(version string) {
+	rootCmd.Version = version
+	if err := rootCmd.Execute(); err != nil {
+		os.Exit(1)
+	}
+}
+
 func init() {
 	rootCmd.Flags().BoolVarP(&flagWrite, "write", "w", false, "Write changes to disk (default is dry-run)")
 	rootCmd.Flags().BoolVarP(&flagQuiet, "quiet", "q", false, "Print only the final summary line")
@@ -129,10 +136,4 @@ func run(cmd *cobra.Command, args []string) error {
 
 	printer.Summary(int(changed), 0, int(errors), int(total))
 	return nil
-}
-
-func Execute() {
-	if err := rootCmd.Execute(); err != nil {
-		os.Exit(1)
-	}
 }

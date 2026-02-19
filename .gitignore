@@ -1,1 +1,3 @@
 cli/remove-comments
+dist/
+cli/dist/

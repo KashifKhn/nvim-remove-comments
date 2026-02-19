@@ -3,6 +3,8 @@
 CLI_DIR := cli
 BIN_NAME := remove-comments
 BIN_OUT  := $(CLI_DIR)/$(BIN_NAME)
+VERSION  ?= $(shell git describe --tags --always --dirty 2>/dev/null || echo "dev")
+LDFLAGS  := -s -w -X main.version=$(VERSION)
 
 # ── Help ──────────────────────────────────────────────────────────────────────
 
@@ -24,7 +26,9 @@ help:
 	@printf "  fmt-check       Check Go formatting without writing\n"
 	@printf "  vet             Run go vet\n"
 	@printf "  tidy            Run go mod tidy\n"
-	@printf "  clean           Remove the built binary\n\n"
+	@printf "  clean           Remove the built binary and dist/\n"
+	@printf "  install         Install to GOPATH/bin with version flag\n"
+	@printf "  release-local   Build all 5 platform binaries into cli/dist/\n\n"
 	@printf "Combined\n"
 	@printf "  check           Run all linters and tests (plugin + CLI)\n"
 
@@ -46,7 +50,7 @@ fmt-lua-check:
 
 .PHONY: build
 build:
-	cd $(CLI_DIR) && go build -o $(BIN_NAME) .
+	cd $(CLI_DIR) && go build -ldflags="$(LDFLAGS)" -o $(BIN_NAME) .
 
 .PHONY: run
 run: build
@@ -99,6 +103,20 @@ tidy:
 .PHONY: clean
 clean:
 	rm -f $(BIN_OUT)
+	rm -rf $(CLI_DIR)/dist
+
+.PHONY: install
+install:
+	cd $(CLI_DIR) && go install -ldflags="$(LDFLAGS)" .
+
+.PHONY: release-local
+release-local:
+	mkdir -p $(CLI_DIR)/dist
+	cd $(CLI_DIR) && GOOS=linux   GOARCH=amd64 go build -ldflags="$(LDFLAGS)" -o dist/$(BIN_NAME)-linux-amd64 .
+	cd $(CLI_DIR) && GOOS=linux   GOARCH=arm64 go build -ldflags="$(LDFLAGS)" -o dist/$(BIN_NAME)-linux-arm64 .
+	cd $(CLI_DIR) && GOOS=darwin  GOARCH=amd64 go build -ldflags="$(LDFLAGS)" -o dist/$(BIN_NAME)-darwin-amd64 .
+	cd $(CLI_DIR) && GOOS=darwin  GOARCH=arm64 go build -ldflags="$(LDFLAGS)" -o dist/$(BIN_NAME)-darwin-arm64 .
+	cd $(CLI_DIR) && GOOS=windows GOARCH=amd64 go build -ldflags="$(LDFLAGS)" -o dist/$(BIN_NAME)-windows-amd64.exe .
 
 # ── Combined ──────────────────────────────────────────────────────────────────
 
