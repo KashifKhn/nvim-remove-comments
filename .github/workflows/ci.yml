@@ -60,10 +60,6 @@ jobs:
             goarch: amd64
             runner: ubuntu-latest
             cc: gcc
-          - goos: linux
-            goarch: arm64
-            runner: ubuntu-latest
-            cc: aarch64-linux-gnu-gcc
           - goos: darwin
             goarch: amd64
             runner: macos-latest
@@ -85,10 +81,6 @@ jobs:
         with:
           go-version: '1.24.x'
           cache: true
-
-      - name: Install arm64 cross-compiler (linux/arm64 only)
-        if: matrix.goos == 'linux' && matrix.goarch == 'arm64'
-        run: sudo apt-get update -q && sudo apt-get install -y gcc-aarch64-linux-gnu
 
       - name: Build binary
         working-directory: ./cli
