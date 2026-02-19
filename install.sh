@@ -123,6 +123,8 @@ check_existing_version() {
 
     if command -v remove-comments >/dev/null 2>&1; then
         bin=$(command -v remove-comments)
+    elif command -v rmc >/dev/null 2>&1; then
+        bin=$(command -v rmc)
     elif [ -x "/usr/local/bin/remove-comments" ]; then
         bin="/usr/local/bin/remove-comments"
     elif [ -x "$HOME/.local/bin/remove-comments" ]; then
@@ -366,9 +368,13 @@ download_and_install() {
     mv "$BINARY" "${INSTALL_DIR}/${TARGET_BINARY}"
     if [ "$OS" != "windows" ]; then
         chmod +x "${INSTALL_DIR}/${TARGET_BINARY}"
+        ln -sf "${INSTALL_DIR}/${TARGET_BINARY}" "${INSTALL_DIR}/rmc"
     fi
 
     print_success "Installed to ${INSTALL_DIR}/${TARGET_BINARY}"
+    if [ "$OS" != "windows" ]; then
+        print_success "Alias created: ${INSTALL_DIR}/rmc → ${TARGET_BINARY}"
+    fi
 }
 
 while [ $# -gt 0 ]; do
@@ -442,7 +448,7 @@ main() {
     fi
 
     echo ""
-    print_info "Run ${BOLD}remove-comments --help${NC} to get started"
+    print_info "Run ${BOLD}rmc --help${NC} (or ${BOLD}remove-comments --help${NC}) to get started"
     print_info "Repo: ${MUTED}https://github.com/${REPO}${NC}"
     echo ""
 }

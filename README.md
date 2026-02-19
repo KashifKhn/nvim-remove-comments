@@ -13,7 +13,7 @@ Both tools use Tree-sitter for accurate, AST-based comment detection across many
 | Tool | Use case |
 |------|----------|
 | [Neovim plugin](#neovim-plugin) | Remove comments from the current buffer |
-| [CLI (`remove-comments`)](#cli-remove-comments) | Remove comments from an entire directory tree |
+| [CLI (`rmc` / `remove-comments`)](#cli-remove-comments--rmc) | Remove comments from an entire directory tree |
 
 ---
 
@@ -53,9 +53,11 @@ JavaScript, TypeScript, TSX, Lua, Python, Go, Java, C, C++, Rust, HTML, CSS, YAM
 
 ---
 
-## CLI: `remove-comments`
+## CLI: `remove-comments` / `rmc`
 
 A standalone binary that walks a directory tree and removes all comments from every supported source file.
+
+The installer creates both `remove-comments` and `rmc` — use whichever you prefer, they are the same binary.
 
 **Default behavior is dry-run.** No files are modified unless `--write` is passed.
 
@@ -86,7 +88,6 @@ Download a binary for your platform from the [releases page](https://github.com/
 | Platform | Archive |
 |----------|---------|
 | Linux amd64 | `remove-comments-linux-amd64.tar.gz` |
-| Linux arm64 | `remove-comments-linux-arm64.tar.gz` |
 | macOS amd64 | `remove-comments-darwin-amd64.tar.gz` |
 | macOS arm64 | `remove-comments-darwin-arm64.tar.gz` |
 | Windows amd64 | `remove-comments-windows-amd64.zip` |
@@ -99,28 +100,34 @@ Requires Go >= 1.24.
 git clone https://github.com/KashifKhn/remove-comments.git
 cd remove-comments/cli
 go build -o remove-comments .
+ln -sf $(pwd)/remove-comments $(dirname $(pwd))/rmc
 ```
 
 ### Usage
 
+Both `rmc` and `remove-comments` are identical — use either:
+
 ```sh
 # Dry-run: show what would change (no files modified)
-remove-comments .
+rmc .
 
 # Apply changes
-remove-comments --write .
+rmc --write .
 
 # Target a specific directory
-remove-comments --write ./src
+rmc --write ./src
 
 # Process only Go files
-remove-comments --lang go .
+rmc --lang go .
 
 # Suppress per-file output, show only the summary
-remove-comments --quiet .
+rmc --quiet .
+
+# Show a unified diff per changed file
+rmc --diff .
 
 # Control parallelism
-remove-comments --jobs 4 .
+rmc --jobs 4 .
 ```
 
 ### Flags
