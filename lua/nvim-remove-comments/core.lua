@@ -6,24 +6,22 @@ local M = {}
 
 function M.remove_comments()
 	local bufnr = vim.api.nvim_get_current_buf()
-	local ft = vim.bo[bufnr].filetype
+	local lang = parsers.get_buf_lang(bufnr)
 
-	if not parsers.has_parser(ft) then
+	if not parsers.has_parser(lang) then
 		return
 	end
 
-	local parser = parsers.get_parser(bufnr, ft)
+	local parser = parsers.get_parser(bufnr, lang)
 	if not parser then
 		return
 	end
 
 	local root = parser:parse()[1]:root()
-	local query_str = config.queries[ft]
-	local query = ts.query.parse(ft, query_str or [[ (comment) @comment ]])
-	-- local query = ts.query.parse(ft, [[ (comment) @comment ]])
+	local query_str = config.queries[lang]
+	local query = ts.query.parse(lang, query_str or [[ (comment) @comment ]])
 
 	local lines_to_delete = {}
-	local edits = {}
 
 	for _, node in query:iter_captures(root, bufnr, 0, -1) do
 		local srow, scol, erow, ecol = node:range()
