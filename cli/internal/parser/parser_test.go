@@ -325,6 +325,62 @@ func TestParse_Go_InlineSingleLineBlock(t *testing.T) {
 	}
 }
 
+func TestParse_Dart_LineComment(t *testing.T) {
+	src := []byte("// line comment\nvoid main() {}\n")
+	ranges, err := Parse(src, langFor(".dart", t))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(ranges) != 1 {
+		t.Fatalf("expected 1 comment, got %d", len(ranges))
+	}
+	if !ranges[0].IsFullLine {
+		t.Error("expected IsFullLine=true")
+	}
+}
+
+func TestParse_Dart_BlockComment(t *testing.T) {
+	src := []byte("/* block\ncomment */\nvoid main() {}\n")
+	ranges, err := Parse(src, langFor(".dart", t))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(ranges) != 1 {
+		t.Fatalf("expected 1 comment, got %d", len(ranges))
+	}
+	if !ranges[0].IsMultiLine {
+		t.Error("expected IsMultiLine=true for block comment")
+	}
+}
+
+func TestParse_Dart_DocComment(t *testing.T) {
+	src := []byte("/// doc comment\nvoid main() {}\n")
+	ranges, err := Parse(src, langFor(".dart", t))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(ranges) != 1 {
+		t.Fatalf("expected 1 comment, got %d", len(ranges))
+	}
+	if !ranges[0].IsFullLine {
+		t.Error("expected IsFullLine=true for doc comment")
+	}
+}
+
+func TestParse_Dart_InlineComment(t *testing.T) {
+	src := []byte("print('hello'); // inline\n")
+	ranges, err := Parse(src, langFor(".dart", t))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(ranges) != 1 {
+		t.Fatalf("expected 1 comment, got %d", len(ranges))
+	}
+	if ranges[0].IsFullLine {
+		t.Error("expected IsFullLine=false for inline comment")
+	}
+}
+
 func TestSplitLines_BasicNewlines(t *testing.T) {
 	tests := []struct {
 		name  string

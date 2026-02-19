@@ -1,6 +1,7 @@
 package languages
 
 import (
+	"github.com/KashifKhn/nvim-remove-comments/cli/internal/dart"
 	sitter "github.com/smacker/go-tree-sitter"
 	"github.com/smacker/go-tree-sitter/bash"
 	"github.com/smacker/go-tree-sitter/c"
@@ -150,6 +151,11 @@ var byExtension = map[string]LangConfig{
 		Name:     "bash",
 		Query:    "(comment) @comment",
 		Language: bash.GetLanguage,
+	},
+	".dart": {
+		Name:     "dart",
+		Query:    "(comment) @comment (documentation_comment) @comment",
+		Language: dart.GetLanguage,
 	},
 }
 

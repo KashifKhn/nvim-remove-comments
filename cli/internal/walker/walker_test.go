@@ -29,6 +29,7 @@ func TestWalk_ReturnsOnlySupportedExtensions(t *testing.T) {
 		"main.lua":      "local x = 1",
 		"component.jsx": "const C = () => <div/>",
 		"component.tsx": "const C = () => <div/>",
+		"main.dart":     "void main() {}",
 	}
 
 	for name, content := range files {
@@ -54,7 +55,7 @@ func TestWalk_ReturnsOnlySupportedExtensions(t *testing.T) {
 		extsSeen[e.Ext] = true
 	}
 
-	expected := []string{".go", ".py", ".ts", ".html", ".css", ".yaml", ".yml", ".toml", ".sh", ".java", ".c", ".cpp", ".rs", ".lua", ".jsx", ".tsx"}
+	expected := []string{".go", ".py", ".ts", ".html", ".css", ".yaml", ".yml", ".toml", ".sh", ".java", ".c", ".cpp", ".rs", ".lua", ".jsx", ".tsx", ".dart"}
 	for _, ext := range expected {
 		if !extsSeen[ext] {
 			t.Errorf("expected extension %s not found in results", ext)
