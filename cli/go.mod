@@ -1,6 +1,6 @@
 module github.com/KashifKhn/nvim-remove-comments/cli
 
-go 1.25.7
+go 1.24
 
 require (
 	github.com/boyter/gocodewalker v1.5.1
