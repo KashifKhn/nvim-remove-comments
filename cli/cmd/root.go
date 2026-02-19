@@ -26,6 +26,7 @@ var rootCmd = &cobra.Command{
 var (
 	flagWrite       bool
 	flagQuiet       bool
+	flagDiff        bool
 	flagLang        string
 	flagJobs        int
 	flagMaxFileSize int64
@@ -41,6 +42,7 @@ func Execute(version string) {
 func init() {
 	rootCmd.Flags().BoolVarP(&flagWrite, "write", "w", false, "Write changes to disk (default is dry-run)")
 	rootCmd.Flags().BoolVarP(&flagQuiet, "quiet", "q", false, "Print only the final summary line")
+	rootCmd.Flags().BoolVarP(&flagDiff, "diff", "d", false, "Show unified diff for each changed file")
 	rootCmd.Flags().StringVar(&flagLang, "lang", "", "Only process files of this language (e.g. go, python)")
 	rootCmd.Flags().IntVarP(&flagJobs, "jobs", "j", 0, "Number of parallel workers (default: NumCPU)")
 	rootCmd.Flags().Int64Var(&flagMaxFileSize, "max-file-size", 10*1024*1024, "Skip files larger than this size in bytes")
@@ -68,7 +70,7 @@ func run(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	printer := output.New(os.Stdout, flagQuiet, flagWrite)
+	printer := output.New(os.Stdout, flagQuiet, flagWrite, flagDiff)
 
 	var (
 		mu      sync.Mutex

@@ -16,13 +16,14 @@ var (
 )
 
 type Printer struct {
-	w     io.Writer
-	quiet bool
-	write bool
+	w        io.Writer
+	quiet    bool
+	write    bool
+	showDiff bool
 }
 
-func New(w io.Writer, quiet, write bool) *Printer {
-	return &Printer{w: w, quiet: quiet, write: write}
+func New(w io.Writer, quiet, write, showDiff bool) *Printer {
+	return &Printer{w: w, quiet: quiet, write: write, showDiff: showDiff}
 }
 
 func (p *Printer) File(r diff.Result) {
@@ -41,6 +42,9 @@ func (p *Printer) File(r diff.Result) {
 	_, _ = yellow.Fprintf(p.w, "  %s  ", action)
 	_, _ = fmt.Fprintf(p.w, "%d comment %s from ", removed, noun)
 	_, _ = bold.Fprintf(p.w, "%s\n", r.Path)
+	if p.showDiff {
+		_, _ = fmt.Fprint(p.w, r.Unified())
+	}
 }
 
 func (p *Printer) Skipped(path, reason string) {
