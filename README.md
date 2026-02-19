@@ -150,6 +150,36 @@ rmc --jobs 4 .
 | `--version` | | | Print version and exit |
 | `--help` | `-h` | | Print help and exit |
 
+### Subcommands
+
+#### `rmc upgrade`
+
+Self-update the binary to the latest release from GitHub.
+
+```sh
+# Check and upgrade to latest version
+rmc upgrade
+
+# Only check for updates (don't install)
+rmc upgrade --check
+
+# Force reinstall even if already on latest
+rmc upgrade --force
+
+# Upgrade to a specific version
+rmc upgrade --version v1.0.3
+
+# JSON output for scripting
+rmc upgrade --check --json
+```
+
+| Flag | Short | Default | Description |
+|------|-------|---------|-------------|
+| `--check` | `-c` | `false` | Only check for updates, do not install |
+| `--force` | `-f` | `false` | Reinstall even if already on the latest version |
+| `--version` | `-v` | `""` | Target a specific version (e.g. `v1.0.3`) |
+| `--json` | | `false` | Print result as JSON |
+
 ### Supported Languages (CLI)
 
 | Language | Extensions |
@@ -196,5 +226,6 @@ nvim-remove-comments/
         ├── parser/             # Tree-sitter comment range extraction
         ├── remover/            # Comment removal from source bytes
         ├── diff/               # Before/after diff computation
-        └── output/             # Terminal output and summary
+        ├── output/             # Terminal output and summary
+        └── upgrade/            # Self-update logic (version check, download, install)
 ```

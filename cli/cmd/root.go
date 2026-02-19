@@ -35,6 +35,7 @@ var (
 
 func Execute(version string) {
 	rootCmd.Version = version
+	registerUpgradeCmd(version)
 	if err := rootCmd.Execute(); err != nil {
 		os.Exit(1)
 	}
