@@ -1,4 +1,4 @@
-module github.com/KashifKhn/nvim-remove-comments/cli
+module github.com/KashifKhn/remove-comments/cli
 
 go 1.24
 

@@ -3,7 +3,7 @@ package remover
 import (
 	"testing"
 
-	"github.com/KashifKhn/nvim-remove-comments/cli/internal/parser"
+	"github.com/KashifKhn/remove-comments/cli/internal/parser"
 )
 
 func TestRemove_NoComments(t *testing.T) {

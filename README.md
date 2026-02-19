@@ -64,24 +64,24 @@ A standalone binary that walks a directory tree and removes all comments from ev
 **One-line installer (Linux / macOS)**
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/KashifKhn/nvim-remove-comments/main/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/KashifKhn/remove-comments/main/install.sh | sh
 ```
 
 Install a specific version:
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/KashifKhn/nvim-remove-comments/main/install.sh | sh -s -- --version 1.0.0
+curl -fsSL https://raw.githubusercontent.com/KashifKhn/remove-comments/main/install.sh | sh -s -- --version 1.0.0
 ```
 
 Skip modifying shell config:
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/KashifKhn/nvim-remove-comments/main/install.sh | sh -s -- --no-modify-path
+curl -fsSL https://raw.githubusercontent.com/KashifKhn/remove-comments/main/install.sh | sh -s -- --no-modify-path
 ```
 
 **Manual download**
 
-Download a binary for your platform from the [releases page](https://github.com/KashifKhn/nvim-remove-comments/releases), extract, and place it on your `PATH`.
+Download a binary for your platform from the [releases page](https://github.com/KashifKhn/remove-comments/releases), extract, and place it on your `PATH`.
 
 | Platform | Archive |
 |----------|---------|
@@ -96,8 +96,8 @@ Download a binary for your platform from the [releases page](https://github.com/
 Requires Go >= 1.24.
 
 ```sh
-git clone https://github.com/KashifKhn/nvim-remove-comments.git
-cd nvim-remove-comments/cli
+git clone https://github.com/KashifKhn/remove-comments.git
+cd remove-comments/cli
 go build -o remove-comments .
 ```
 

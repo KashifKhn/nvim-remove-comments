@@ -6,7 +6,7 @@ import (
 
 	"github.com/fatih/color"
 
-	"github.com/KashifKhn/nvim-remove-comments/cli/internal/diff"
+	"github.com/KashifKhn/remove-comments/cli/internal/diff"
 )
 
 var (

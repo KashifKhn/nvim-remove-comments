@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-REPO="KashifKhn/nvim-remove-comments"
+REPO="KashifKhn/remove-comments"
 BINARY_NAME="remove-comments"
 
 CYAN='\033[0;36m'

@@ -4,7 +4,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/KashifKhn/nvim-remove-comments/cli/internal/languages"
+	"github.com/KashifKhn/remove-comments/cli/internal/languages"
 	"github.com/boyter/gocodewalker"
 )
 

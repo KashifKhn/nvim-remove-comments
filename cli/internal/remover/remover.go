@@ -1,7 +1,7 @@
 package remover
 
 import (
-	"github.com/KashifKhn/nvim-remove-comments/cli/internal/parser"
+	"github.com/KashifKhn/remove-comments/cli/internal/parser"
 )
 
 type inlineEdit struct {

@@ -3,7 +3,7 @@ package parser
 import (
 	"testing"
 
-	"github.com/KashifKhn/nvim-remove-comments/cli/internal/languages"
+	"github.com/KashifKhn/remove-comments/cli/internal/languages"
 )
 
 func langFor(ext string, t *testing.T) languages.LangConfig {

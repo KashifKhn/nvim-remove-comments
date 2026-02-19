@@ -6,7 +6,7 @@ import (
 
 	sitter "github.com/smacker/go-tree-sitter"
 
-	"github.com/KashifKhn/nvim-remove-comments/cli/internal/languages"
+	"github.com/KashifKhn/remove-comments/cli/internal/languages"
 )
 
 type CommentRange struct {

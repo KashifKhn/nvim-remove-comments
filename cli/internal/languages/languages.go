@@ -1,7 +1,7 @@
 package languages
 
 import (
-	"github.com/KashifKhn/nvim-remove-comments/cli/internal/dart"
+	"github.com/KashifKhn/remove-comments/cli/internal/dart"
 	sitter "github.com/smacker/go-tree-sitter"
 	"github.com/smacker/go-tree-sitter/bash"
 	"github.com/smacker/go-tree-sitter/c"

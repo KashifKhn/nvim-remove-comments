@@ -9,11 +9,11 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/KashifKhn/nvim-remove-comments/cli/internal/diff"
-	"github.com/KashifKhn/nvim-remove-comments/cli/internal/output"
-	"github.com/KashifKhn/nvim-remove-comments/cli/internal/parser"
-	"github.com/KashifKhn/nvim-remove-comments/cli/internal/remover"
-	"github.com/KashifKhn/nvim-remove-comments/cli/internal/walker"
+	"github.com/KashifKhn/remove-comments/cli/internal/diff"
+	"github.com/KashifKhn/remove-comments/cli/internal/output"
+	"github.com/KashifKhn/remove-comments/cli/internal/parser"
+	"github.com/KashifKhn/remove-comments/cli/internal/remover"
+	"github.com/KashifKhn/remove-comments/cli/internal/walker"
 )
 
 var rootCmd = &cobra.Command{

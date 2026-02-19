@@ -1,6 +1,6 @@
 package main
 
-import "github.com/KashifKhn/nvim-remove-comments/cli/cmd"
+import "github.com/KashifKhn/remove-comments/cli/cmd"
 
 var version = "dev"
 
