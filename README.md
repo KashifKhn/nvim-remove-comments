@@ -1,4 +1,4 @@
-# nvim-remove-comments
+# remove-comments
 
 Remove all comments from source code — as a Neovim plugin and as a standalone CLI tool.
 
@@ -30,7 +30,7 @@ Both tools use Tree-sitter for accurate, AST-based comment detection across many
 
 ```lua
 {
-  "KashifKhn/nvim-remove-comments",
+  "KashifKhn/remove-comments",
   config = function()
     require("nvim-remove-comments").setup()
   end,
@@ -213,7 +213,7 @@ LLM-generated code tends to be full of explanatory comments. This toolset strips
 ## Repository Structure
 
 ```
-nvim-remove-comments/
+remove-comments/
 ├── lua/nvim-remove-comments/   # Neovim plugin (Lua)
 ├── plugin/                     # Neovim autoload entry point
 ├── install.sh                  # CLI one-line installer
