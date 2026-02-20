@@ -39,19 +39,19 @@ func DownloadReleaseWithProgress(version string, platform *PlatformInfo, progres
 	downloadURL := platform.GetDownloadURL(version)
 
 	if err := downloadFileWithProgress(downloadURL, archivePath, progress); err != nil {
-		os.RemoveAll(tmpDir)
+		_ = os.RemoveAll(tmpDir)
 		return nil, fmt.Errorf("failed to download release: %w", err)
 	}
 
 	fileInfo, err := os.Stat(archivePath)
 	if err != nil {
-		os.RemoveAll(tmpDir)
+		_ = os.RemoveAll(tmpDir)
 		return nil, fmt.Errorf("failed to stat downloaded file: %w", err)
 	}
 
 	checksum, err := calculateChecksum(archivePath)
 	if err != nil {
-		os.RemoveAll(tmpDir)
+		_ = os.RemoveAll(tmpDir)
 		return nil, fmt.Errorf("failed to calculate checksum: %w", err)
 	}
 
@@ -76,7 +76,7 @@ func downloadFileWithProgress(url, destPath string, progress ProgressCallback) e
 	if err != nil {
 		return fmt.Errorf("failed to download: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	if resp.StatusCode == http.StatusNotFound {
 		return fmt.Errorf("release not found at %s", url)
@@ -90,36 +90,37 @@ func downloadFileWithProgress(url, destPath string, progress ProgressCallback) e
 	if err != nil {
 		return fmt.Errorf("failed to create file: %w", err)
 	}
-	defer out.Close()
 
 	if progress != nil && resp.ContentLength > 0 {
 		var downloaded int64
 		buf := make([]byte, 32*1024)
 		for {
-			n, err := resp.Body.Read(buf)
+			n, readErr := resp.Body.Read(buf)
 			if n > 0 {
 				_, writeErr := out.Write(buf[:n])
 				if writeErr != nil {
+					_ = out.Close()
 					return fmt.Errorf("failed to write file: %w", writeErr)
 				}
 				downloaded += int64(n)
 				progress(downloaded, resp.ContentLength)
 			}
-			if err == io.EOF {
+			if readErr == io.EOF {
 				break
 			}
-			if err != nil {
-				return fmt.Errorf("failed to read response: %w", err)
+			if readErr != nil {
+				_ = out.Close()
+				return fmt.Errorf("failed to read response: %w", readErr)
 			}
 		}
 	} else {
-		_, err = io.Copy(out, resp.Body)
-		if err != nil {
+		if _, err = io.Copy(out, resp.Body); err != nil {
+			_ = out.Close()
 			return fmt.Errorf("failed to write file: %w", err)
 		}
 	}
 
-	return nil
+	return out.Close()
 }
 
 func calculateChecksum(filePath string) (string, error) {
@@ -127,7 +128,7 @@ func calculateChecksum(filePath string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 
 	h := sha256.New()
 	if _, err := io.Copy(h, f); err != nil {
@@ -154,7 +155,7 @@ func FetchChecksums(version string) (map[string]string, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch checksums: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	if resp.StatusCode == http.StatusNotFound {
 		return nil, nil
@@ -226,13 +227,13 @@ func extractFromTarGz(archivePath, destDir, targetName string) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("failed to open archive: %w", err)
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 
 	gzr, err := gzip.NewReader(f)
 	if err != nil {
 		return "", fmt.Errorf("failed to create gzip reader: %w", err)
 	}
-	defer gzr.Close()
+	defer func() { _ = gzr.Close() }()
 
 	tr := tar.NewReader(gzr)
 
@@ -259,10 +260,13 @@ func extractFromTarGz(archivePath, destDir, targetName string) (string, error) {
 			}
 
 			if _, err := io.Copy(outFile, tr); err != nil {
-				outFile.Close()
+				_ = outFile.Close()
 				return "", fmt.Errorf("failed to extract file: %w", err)
 			}
-			outFile.Close()
+
+			if err := outFile.Close(); err != nil {
+				return "", fmt.Errorf("failed to close output file: %w", err)
+			}
 
 			return destPath, nil
 		}
@@ -276,7 +280,7 @@ func extractFromZip(archivePath, destDir, targetName string) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("failed to open zip: %w", err)
 	}
-	defer r.Close()
+	defer func() { _ = r.Close() }()
 
 	for _, f := range r.File {
 		filename := filepath.Base(f.Name)
@@ -292,18 +296,25 @@ func extractFromZip(archivePath, destDir, targetName string) (string, error) {
 		destPath := filepath.Join(destDir, filename)
 		outFile, err := os.OpenFile(destPath, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0755)
 		if err != nil {
-			rc.Close()
+			_ = rc.Close()
 			return "", fmt.Errorf("failed to create output file: %w", err)
 		}
 
 		if _, err := io.Copy(outFile, rc); err != nil {
-			outFile.Close()
-			rc.Close()
+			_ = outFile.Close()
+			_ = rc.Close()
 			return "", fmt.Errorf("failed to extract file: %w", err)
 		}
 
-		outFile.Close()
-		rc.Close()
+		if err := outFile.Close(); err != nil {
+			_ = rc.Close()
+			return "", fmt.Errorf("failed to close output file: %w", err)
+		}
+
+		if err := rc.Close(); err != nil {
+			return "", fmt.Errorf("failed to close zip entry: %w", err)
+		}
+
 		return destPath, nil
 	}
 
@@ -312,6 +323,6 @@ func extractFromZip(archivePath, destDir, targetName string) (string, error) {
 
 func CleanupDownload(result *DownloadResult) {
 	if result != nil && result.FilePath != "" {
-		os.RemoveAll(filepath.Dir(result.FilePath))
+		_ = os.RemoveAll(filepath.Dir(result.FilePath))
 	}
 }

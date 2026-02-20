@@ -78,7 +78,7 @@ func fetchLatestRelease(client *http.Client, url string) (*GitHubRelease, error)
 	if err != nil {
 		return nil, &retryableError{err: fmt.Errorf("failed to fetch latest release: %w", err)}
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	if resp.StatusCode == http.StatusNotFound {
 		return nil, fmt.Errorf("no releases found for %s/%s", RepoOwner, RepoName)
